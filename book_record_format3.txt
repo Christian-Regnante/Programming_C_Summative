@@ -1,0 +1,37 @@
+Books{
+    "B001": 
+    {
+        "Title": "The Great Gatsby"
+        "Author": "F. Scott Fitzgerald"
+        "Category": "Fiction"
+        "Number of copies available": 5
+    },
+    "B002": 
+    {
+        "Title": "To Kill a Mockingbird"
+        "Author": "Harper Lee"
+        "Category": "Fiction"
+        "Number of copies available": 8
+    },
+    "B003": 
+    {
+        "Title": "1984"
+        "Author": "George Orwell"
+        "Category": "Fiction"
+        "Number of copies available": 6
+    },
+    "B004": 
+    {
+        "Title": "Pride and Prejudice"
+        "Author": "Jane Austen"
+        "Category": "Fiction"
+        "Number of copies available": 4
+    },
+    "B005": 
+    {
+        "Title": "The Catcher in the Rye"
+        "Author": "J.D. Salinger"
+        "Category": "Fiction"
+        "Number of copies available": 7
+    }
+}
