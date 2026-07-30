@@ -2,10 +2,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "project3_inventory.h"
 
-// Binary storage file name
+// Default binary storage and text seed filenames
 #define BIN_FILENAME "library_data.bin"
+#define DEFAULT_TXT_SEED "book_record_format2.txt"
 
 void display_menu(void) {
     printf("\n=======================================================\n");
@@ -35,10 +37,27 @@ int main(void) {
         return EXIT_FAILURE;
     }
 
-    int choice = -1;
-
     printf("\nWelcome to the Library Inventory Management System!\n");
     printf("System initialized with dynamic memory allocation.\n");
+
+    // Phase 2: Attempt to load binary file on startup
+    printf("\nChecking for existing binary storage ('%s')...\n", BIN_FILENAME);
+    if (!load_from_bin(&inventory, BIN_FILENAME)) {
+        printf("\nNo binary database found or database is empty.\n");
+        printf("Would you like to import sample records from '%s'? (y/n): ", DEFAULT_TXT_SEED);
+        
+        char response[10];
+        if (fgets(response, sizeof(response), stdin) != NULL) {
+            remove_newline(response);
+            if (response[0] == 'y' || response[0] == 'Y') {
+                import_from_txt(&inventory, DEFAULT_TXT_SEED);
+            } else {
+                printf("Starting with a fresh empty library inventory.\n");
+            }
+        }
+    }
+
+    int choice = -1;
 
     // Main Interactive CLI Loop
     while (1) {
@@ -54,8 +73,7 @@ int main(void) {
         clear_input_buffer(); // Clear newline left by scanf
 
         if (choice == 0) {
-            printf("\nExiting application...\n");
-            // Prompt to save before exit in later phase
+            printf("\nSaving inventory state before exit...\n");
             save_to_bin(&inventory, BIN_FILENAME);
             break;
         }
@@ -85,9 +103,18 @@ int main(void) {
             case 8:
                 generate_reports(&inventory);
                 break;
-            case 9:
-                import_from_txt(&inventory, "book_record_format2.txt");
+            case 9: {
+                char txt_filename[256];
+                printf("\nEnter text seed filename to import (Press ENTER for '%s'): ", DEFAULT_TXT_SEED);
+                if (fgets(txt_filename, sizeof(txt_filename), stdin) != NULL) {
+                    remove_newline(txt_filename);
+                    if (strlen(txt_filename) == 0) {
+                        strcpy(txt_filename, DEFAULT_TXT_SEED);
+                    }
+                    import_from_txt(&inventory, txt_filename);
+                }
                 break;
+            }
             case 10:
                 save_to_bin(&inventory, BIN_FILENAME);
                 break;
@@ -99,7 +126,7 @@ int main(void) {
 
     // Clean up dynamic memory before exiting
     free_inventory(&inventory);
-    printf("Thank you for using the Library Inventory Management System. Goodbye!\n");
+    printf("\nThank you for using the Library Inventory Management System. Goodbye!\n");
 
     return EXIT_SUCCESS;
 }

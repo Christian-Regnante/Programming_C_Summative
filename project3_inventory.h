@@ -69,5 +69,7 @@ void generate_reports(const Inventory *inv);
 // --- Utility Functions ---
 void clear_input_buffer(void);
 void remove_newline(char *str);
+int find_book_index_by_id(const Inventory *inv, const char *id);
+int str_case_contains(const char *haystack, const char *needle);
 
 #endif // PROJECT3_INVENTORY_H
