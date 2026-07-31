@@ -1,0 +1,5 @@
+Hello world! This is the first sample text file.
+It contains multiple lines of text for testing multi-threaded file processing.
+Each thread analyzes one file independently using POSIX threads.
+This ensures concurrency and high performance.
+Final line of sample 1.
