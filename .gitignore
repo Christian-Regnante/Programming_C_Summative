@@ -1,3 +1,7 @@
 *.exe
 *.bin
 *.obj
+*.c_analysis.txt
+*.h_analysis.txt
+*.txt_analysis.txt
+*.log
