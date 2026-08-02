@@ -1,5 +1,4 @@
 #define _CRT_SECURE_NO_WARNINGS
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -29,49 +28,30 @@ void display_main_menu(void) {
     printf("Enter choice (0-7): ");
 }
 
-void display_conversion_menu(void) {
+void perform_conversion_ui(HistoryManager *hm) {
     printf("\n--- Select Unit Conversion ---\n");
     int count = get_num_conversions();
     for (int i = 0; i < count; i++) {
         const ConversionOption *opt = get_conversion_option(i);
         printf(" %d. %s (%s -> %s)\n", i + 1, opt->name, opt->from_unit, opt->to_unit);
     }
-    printf(" 0. Back to Main Menu\n");
-    printf("Select conversion (0-%d): ", count);
-}
-
-void perform_conversion_ui(HistoryManager *hm) {
-    display_conversion_menu();
+    printf(" 0. Back to Main Menu\nSelect conversion (0-%d): ", count);
 
     int choice = -1;
-    if (scanf("%d", &choice) != 1) {
-        printf("[ERROR] Invalid choice format!\n");
-        clear_input_buffer();
-        return;
-    }
+    if (scanf("%d", &choice) != 1 || choice == 0) { clear_input_buffer(); return; }
     clear_input_buffer();
 
-    if (choice == 0) return;
-
-    int total_options = get_num_conversions();
-    if (choice < 1 || choice > total_options) {
-        printf("[ERROR] Option out of range (1-%d).\n", total_options);
+    if (choice < 1 || choice > count) {
+        printf("[ERROR] Option out of range (1-%d).\n", count);
         return;
     }
 
     const ConversionOption *opt = get_conversion_option(choice - 1);
-    if (opt == NULL || opt->convert == NULL) {
-        printf("[ERROR] Invalid conversion option selected.\n");
-        return;
-    }
+    if (!opt || !opt->convert) return;
 
-    printf("\nEnter value in %s: ", opt->from_unit);
+    printf("Enter value in %s: ", opt->from_unit);
     double input_val = 0.0;
-    if (scanf("%lf", &input_val) != 1) {
-        printf("[ERROR] Invalid numeric value!\n");
-        clear_input_buffer();
-        return;
-    }
+    if (scanf("%lf", &input_val) != 1) { clear_input_buffer(); return; }
     clear_input_buffer();
 
     // DYNAMIC FUNCTION POINTER INVOCATION
@@ -92,209 +72,101 @@ void perform_conversion_ui(HistoryManager *hm) {
 }
 
 void search_records_ui(const HistoryManager *hm) {
-    if (hm == NULL || hm->count == 0) {
-        printf("\n[INFO] History is currently empty. Nothing to search.\n");
-        return;
-    }
+    if (!hm || hm->count == 0) { printf("\n[INFO] History is empty.\n"); return; }
 
-    printf("\n--- Search Conversion Records ---\n");
-    printf(" 1. Search by Conversion Type Keyword\n");
-    printf(" 2. Search by Converted Result Value Range\n");
-    printf(" 0. Cancel\n");
-    printf("Select option (0-2): ");
-
-    int choice = -1;
-    if (scanf("%d", &choice) != 1) {
-        printf("[ERROR] Invalid choice.\n");
-        clear_input_buffer();
-        return;
-    }
+    printf("\n--- Search Records ---\n 1. By Type Keyword\n 2. By Result Value Range\n 0. Cancel\nChoice: ");
+    int choice = 0;
+    if (scanf("%d", &choice) != 1 || choice == 0) { clear_input_buffer(); return; }
     clear_input_buffer();
 
-    if (choice == 0) return;
-
     if (choice == 1) {
-        printf("Enter conversion type keyword (e.g. Miles, Celsius): ");
         char keyword[100];
-        if (fgets(keyword, sizeof(keyword), stdin) != NULL) {
+        printf("Enter conversion type keyword (e.g. Miles, Celsius): ");
+        if (fgets(keyword, sizeof(keyword), stdin)) {
             size_t len = strlen(keyword);
             if (len > 0 && keyword[len - 1] == '\n') keyword[len - 1] = '\0';
-            if (strlen(keyword) > 0) {
-                search_history_by_type(hm, keyword);
-            }
+            search_history_by_type(hm, keyword);
         }
     } else if (choice == 2) {
-        printf("Enter minimum converted value: ");
         double min_val = 0.0, max_val = 0.0;
+        printf("Enter min value: ");
         if (scanf("%lf", &min_val) == 1) {
-            printf("Enter maximum converted value: ");
-            if (scanf("%lf", &max_val) == 1) {
-                search_history_by_value(hm, min_val, max_val);
-            } else {
-                printf("[ERROR] Invalid maximum value.\n");
-            }
-        } else {
-            printf("[ERROR] Invalid minimum value.\n");
+            printf("Enter max value: ");
+            if (scanf("%lf", &max_val) == 1) search_history_by_value(hm, min_val, max_val);
         }
         clear_input_buffer();
-    } else {
-        printf("[ERROR] Invalid option selected.\n");
     }
 }
 
 void sort_records_ui(HistoryManager *hm) {
-    if (hm == NULL || hm->count <= 1) {
-        printf("\n[INFO] At least 2 conversion records are needed to sort.\n");
-        return;
-    }
-
-    printf("\n--- Sort Conversion History (Comparator Callbacks) ---\n");
-    printf(" 1. Sort by Conversion Type (Alphabetical A-Z)\n");
-    printf(" 2. Sort by Converted Result (Ascending: Low to High)\n");
-    printf(" 3. Sort by Converted Result (Descending: High to Low)\n");
-    printf(" 0. Cancel\n");
-    printf("Select option (0-3): ");
-
-    int choice = -1;
-    if (scanf("%d", &choice) != 1) {
-        printf("[ERROR] Invalid input.\n");
-        clear_input_buffer();
-        return;
-    }
+    if (!hm || hm->count <= 1) { printf("\n[INFO] At least 2 records are needed to sort.\n"); return; }
+    printf("\n--- Sort Records ---\n 1. By Conversion Name (A-Z)\n 2. By Result (Ascending)\n 3. By Result (Descending)\n 0. Cancel\nChoice: ");
+    int choice = 0;
+    if (scanf("%d", &choice) != 1 || choice == 0) { clear_input_buffer(); return; }
     clear_input_buffer();
 
-    RecordComparator comp = NULL;
-    switch (choice) {
-        case 1: comp = compare_by_type; break;
-        case 2: comp = compare_by_output_asc; break;
-        case 3: comp = compare_by_output_desc; break;
-        case 0: return;
-        default:
-            printf("[ERROR] Invalid selection.\n");
-            return;
-    }
-
-    sort_history(hm, comp);
+    if (choice == 1) sort_history(hm, compare_by_type);
+    else if (choice == 2) sort_history(hm, compare_by_output_asc);
+    else if (choice == 3) sort_history(hm, compare_by_output_desc);
+    
+    printf("[SUCCESS] History sorted.\n");
+    view_history(hm);
 }
 
-void apply_callbacks_ui(HistoryManager *hm) {
-    if (hm == NULL || hm->count == 0) {
-        printf("\n[INFO] History is currently empty. No records to process.\n");
-        return;
-    }
-
-    printf("\n--- Apply Callback Operations ---\n");
-    printf(" 1. Batch Round Converted Results to N Decimal Places (Processing Callback)\n");
-    printf(" 2. Filter History by Minimum Converted Value (Predicate Callback)\n");
-    printf(" 3. Filter History by Conversion Type Keyword (Predicate Callback)\n");
-    printf(" 0. Cancel\n");
-    printf("Select option (0-3): ");
-
-    int choice = -1;
-    if (scanf("%d", &choice) != 1) {
-        printf("[ERROR] Invalid choice format.\n");
-        clear_input_buffer();
-        return;
-    }
+void callback_operations_ui(HistoryManager *hm) {
+    if (!hm || hm->count == 0) { printf("\n[INFO] History is empty.\n"); return; }
+    printf("\n--- Callback Engine Operations ---\n 1. Batch Round Precision (2 Decimals)\n 2. Filter Records with Result >= Threshold\n 0. Cancel\nChoice: ");
+    int choice = 0;
+    if (scanf("%d", &choice) != 1 || choice == 0) { clear_input_buffer(); return; }
     clear_input_buffer();
 
-    if (choice == 0) return;
-
     if (choice == 1) {
-        printf("Enter desired decimal precision places (0-6): ");
         int decimals = 2;
-        if (scanf("%d", &decimals) == 1 && decimals >= 0 && decimals <= 6) {
-            process_history_batch(hm, callback_round_precision, &decimals);
-            printf("\n[SUCCESS] Applied batch precision rounding callback (%d decimals) to all records!\n", decimals);
-            view_history(hm);
-            save_history_bin(hm, HISTORY_BIN_FILE);
-        } else {
-            printf("[ERROR] Invalid decimal places input.\n");
-        }
-        clear_input_buffer();
+        process_history_batch(hm, callback_round_precision, &decimals);
+        printf("[SUCCESS] All values rounded to 2 decimal places.\n");
+        view_history(hm);
     } else if (choice == 2) {
-        printf("Enter minimum converted value threshold: ");
-        double min_val = 0.0;
-        if (scanf("%lf", &min_val) == 1) {
-            filter_history(hm, predicate_filter_by_min_val, &min_val);
-        } else {
-            printf("[ERROR] Invalid threshold value.\n");
-        }
+        double threshold = 0.0;
+        printf("Enter minimum result value threshold: ");
+        if (scanf("%lf", &threshold) == 1) filter_history(hm, predicate_filter_by_min_val, &threshold);
         clear_input_buffer();
-    } else if (choice == 3) {
-        printf("Enter keyword to filter (e.g. Miles, Celsius): ");
-        char keyword[50];
-        if (fgets(keyword, sizeof(keyword), stdin) != NULL) {
-            size_t len = strlen(keyword);
-            if (len > 0 && keyword[len - 1] == '\n') keyword[len - 1] = '\0';
-            if (strlen(keyword) > 0) {
-                filter_history(hm, predicate_filter_by_type, keyword);
-            }
-        }
-    } else {
-        printf("[ERROR] Unrecognized callback option.\n");
     }
 }
 
 int main(void) {
-    HistoryManager history;
-    if (!init_history(&history)) {
-        printf("[FATAL] Could not initialize history manager. Exiting.\n");
-        return EXIT_FAILURE;
-    }
+    HistoryManager hm;
+    if (!init_history(&hm)) return EXIT_FAILURE;
 
-    printf("\nWelcome to Project 4: Smart Calculator & Unit Conversion Toolkit!\n");
-    printf("System initialized with dynamic memory allocation.\n");
-
-    load_history_bin(&history, HISTORY_BIN_FILE);
+    printf("\nWelcome to the Unit Conversion Toolkit!\n");
+    load_history_bin(&hm, HISTORY_BIN_FILE);
 
     int choice = -1;
     while (1) {
         display_main_menu();
-
         if (scanf("%d", &choice) != 1) {
-            printf("\n[ERROR] Invalid input! Please enter a number between 0 and 7.\n");
             clear_input_buffer();
             continue;
         }
         clear_input_buffer();
 
         if (choice == 0) {
-            printf("\nSaving history state before exit...\n");
-            save_history_bin(&history, HISTORY_BIN_FILE);
+            save_history_bin(&hm, HISTORY_BIN_FILE);
             break;
         }
 
         switch (choice) {
-            case 1:
-                perform_conversion_ui(&history);
-                break;
-            case 2:
-                view_history(&history);
-                break;
-            case 3:
-                search_records_ui(&history);
-                break;
-            case 4:
-                sort_records_ui(&history);
-                break;
-            case 5:
-                apply_callbacks_ui(&history);
-                break;
-            case 6:
-                save_history_bin(&history, HISTORY_BIN_FILE);
-                break;
-            case 7:
-                load_history_bin(&history, HISTORY_BIN_FILE);
-                break;
-            default:
-                printf("\n[ERROR] Unrecognized option %d. Please try again.\n", choice);
-                break;
+            case 1: perform_conversion_ui(&hm); break;
+            case 2: view_history(&hm); break;
+            case 3: search_records_ui(&hm); break;
+            case 4: sort_records_ui(&hm); break;
+            case 5: callback_operations_ui(&hm); break;
+            case 6: save_history_bin(&hm, HISTORY_BIN_FILE); printf("[SUCCESS] History saved.\n"); break;
+            case 7: load_history_bin(&hm, HISTORY_BIN_FILE); break;
+            default: printf("[ERROR] Invalid choice.\n"); break;
         }
     }
 
-    free_history(&history);
-    printf("Thank you for using the Smart Calculator & Unit Conversion Toolkit. Goodbye!\n");
-
+    free_history(&hm);
+    printf("\nThank you for using the Unit Conversion Toolkit. Goodbye!\n");
     return EXIT_SUCCESS;
 }

@@ -63,14 +63,14 @@ Programming_C_Summative/
 
 ### 🟢 Project 3: Library Book Inventory Management System
 * **Directory**: [`Project3/`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project3)
-* **Primary Files**: [`project3_main.c`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project3/project3_main.c), [`project3_inventory.c`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project3/project3_inventory.c), [`project3_inventory.h`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project3/project3_inventory.h)
+* **Primary File**: [`project3_main.c`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project3/project3_main.c)
 * **Language & Compiler**: C99/C11 (GCC / MSVC).
 
 #### Key Features & Implementation:
 * **Dynamic Array Management**: Struct inventory dynamically resizes using `malloc`, `realloc`, and `free`.
 * **Full CRUD Operations**: Create, Read, Update, Delete, and Search book records by ID, Title, or Author.
-* **Binary Data Persistence**: Serializes struct records directly to `library_data.bin` for fast, efficient binary storage.
-* **Text Record Importer**: Parses and imports raw text records from multiple formatted input files.
+* **Text Data Persistence**: Saves and loads records from a simple pipe-delimited text file for easier inspection.
+* **Text Record Importer**: Parses and imports raw text records from formatted input files.
 * **Sorting Algorithms**: Sorts book records by ID, Title, or Available Copies using custom sorting routines.
 
 ---
@@ -116,7 +116,7 @@ Programming_C_Summative/
 
 #### Project 3 (Library System):
 ```bash
-gcc -Wall -Wextra Project3/project3_main.c Project3/project3_inventory.c -o Project3/library_system
+gcc -Wall -Wextra Project3/project3_main.c -o Project3/library_system
 ./Project3/library_system
 ```
 
