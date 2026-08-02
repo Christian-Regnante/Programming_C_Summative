@@ -110,59 +110,106 @@ int import_from_txt(Inventory *inv, const char *filename) {
         return 0;
     }
 
-    char line[256];
-    Book b = {0};
-    int imported = 0, field_count = 0;
+    char line[512];
+    int imported = 0;
 
+    // First pass: try reading pipe-delimited format (e.g. B001|Title|Author|Category|5)
     while (fgets(line, sizeof(line), fp)) {
         remove_newline(line);
         if (strlen(line) == 0) continue;
 
-        char *val = strchr(line, ':');
-        if (val) {
-            val++;
-            while (*val == ' ' || *val == '\t') val++;
-        } else {
-            val = line;
-        }
+        // Skip header lines
+        if (strstr(line, "Book ID|") || strstr(line, "Book ID |")) continue;
 
-        if (strstr(line, "Book ID") || field_count == 0) {
-            if (field_count >= 4 && strlen(b.id) > 0) {
-                if (find_book_index_by_id(inv, b.id) == -1) {
+        if (strchr(line, '|')) {
+            Book b = {0};
+            char temp[512];
+            strncpy(temp, line, sizeof(temp) - 1);
+
+            char *token = strtok(temp, "|");
+            if (token) strncpy(b.id, token, MAX_ID_LEN - 1);
+
+            token = strtok(NULL, "|");
+            if (token) strncpy(b.title, token, MAX_TITLE_LEN - 1);
+
+            token = strtok(NULL, "|");
+            if (token) strncpy(b.author, token, MAX_AUTHOR_LEN - 1);
+
+            token = strtok(NULL, "|");
+            if (token) strncpy(b.category, token, MAX_CATEGORY_LEN - 1);
+
+            token = strtok(NULL, "|");
+            if (token) b.copies = atoi(token);
+
+            if (strlen(b.id) > 0 && find_book_index_by_id(inv, b.id) == -1) {
+                if (inv->count >= inv->capacity) resize_inventory(inv);
+                inv->books[inv->count++] = b;
+                imported++;
+            }
+        }
+    }
+
+    // Second pass: if no pipe-delimited records were found, try parsing multi-line key-value formats
+    if (imported == 0) {
+        rewind(fp);
+        Book b = {0};
+
+        while (fgets(line, sizeof(line), fp)) {
+            remove_newline(line);
+            if (strlen(line) == 0) continue;
+
+            char *val = strchr(line, ':');
+            if (val) {
+                *val = '\0';
+                val++;
+                while (*val == ' ' || *val == '\t') val++;
+            } else {
+                continue;
+            }
+
+            char *key = line;
+            while (*key == ' ' || *key == '\t' || *key == '"') key++;
+
+            // Clean trailing quotes/commas from val
+            char clean_val[256] = {0};
+            int k = 0;
+            for (int i = 0; val[i]; i++) {
+                if (val[i] != '"' && val[i] != ',' && val[i] != '\r' && val[i] != '\n') {
+                    clean_val[k++] = val[i];
+                }
+            }
+            clean_val[k] = '\0';
+
+            if (strstr(key, "Book ID") || (key[0] == 'B' && strlen(clean_val) > 0 && isdigit((unsigned char)clean_val[1]))) {
+                if (strlen(b.id) > 0 && find_book_index_by_id(inv, b.id) == -1) {
+                    if (inv->count >= inv->capacity) resize_inventory(inv);
+                    inv->books[inv->count++] = b;
+                    imported++;
+                }
+                memset(&b, 0, sizeof(Book));
+                strncpy(b.id, clean_val, MAX_ID_LEN - 1);
+            } else if (strstr(key, "Title")) {
+                strncpy(b.title, clean_val, MAX_TITLE_LEN - 1);
+            } else if (strstr(key, "Author")) {
+                strncpy(b.author, clean_val, MAX_AUTHOR_LEN - 1);
+            } else if (strstr(key, "Category")) {
+                strncpy(b.category, clean_val, MAX_CATEGORY_LEN - 1);
+            } else if (strstr(key, "copies") || strstr(key, "Copies")) {
+                b.copies = atoi(clean_val);
+                if (strlen(b.id) > 0 && find_book_index_by_id(inv, b.id) == -1) {
                     if (inv->count >= inv->capacity) resize_inventory(inv);
                     inv->books[inv->count++] = b;
                     imported++;
                 }
                 memset(&b, 0, sizeof(Book));
             }
-            strncpy(b.id, val, MAX_ID_LEN - 1);
-            field_count = 1;
-        } else if (strstr(line, "Title") || field_count == 1) {
-            strncpy(b.title, val, MAX_TITLE_LEN - 1);
-            field_count = 2;
-        } else if (strstr(line, "Author") || field_count == 2) {
-            strncpy(b.author, val, MAX_AUTHOR_LEN - 1);
-            field_count = 3;
-        } else if (strstr(line, "Category") || field_count == 3) {
-            strncpy(b.category, val, MAX_CATEGORY_LEN - 1);
-            field_count = 4;
-        } else if (strstr(line, "copies") || strstr(line, "Copies") || field_count == 4) {
-            b.copies = atoi(val);
-            field_count = 5;
-            if (find_book_index_by_id(inv, b.id) == -1) {
-                if (inv->count >= inv->capacity) resize_inventory(inv);
-                inv->books[inv->count++] = b;
-                imported++;
-            }
-            memset(&b, 0, sizeof(Book));
-            field_count = 0;
         }
-    }
 
-    if (field_count >= 4 && strlen(b.id) > 0 && find_book_index_by_id(inv, b.id) == -1) {
-        if (inv->count >= inv->capacity) resize_inventory(inv);
-        inv->books[inv->count++] = b;
-        imported++;
+        if (strlen(b.id) > 0 && find_book_index_by_id(inv, b.id) == -1) {
+            if (inv->count >= inv->capacity) resize_inventory(inv);
+            inv->books[inv->count++] = b;
+            imported++;
+        }
     }
 
     fclose(fp);

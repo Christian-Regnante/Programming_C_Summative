@@ -53,9 +53,6 @@ static const ConversionOption CONVERSION_TABLE[] = {
 
 static const int NUM_CONVERSIONS = sizeof(CONVERSION_TABLE) / sizeof(CONVERSION_TABLE[0]);
 
-/**
- * Returns pointer to ConversionOption at given index (0-based).
- */
 const ConversionOption* get_conversion_option(int index) {
     if (index < 0 || index >= NUM_CONVERSIONS) {
         return NULL;
@@ -63,9 +60,6 @@ const ConversionOption* get_conversion_option(int index) {
     return &CONVERSION_TABLE[index];
 }
 
-/**
- * Returns total number of available conversion options.
- */
 int get_num_conversions(void) {
     return NUM_CONVERSIONS;
 }
