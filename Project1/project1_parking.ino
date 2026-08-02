@@ -1,7 +1,7 @@
 #include <stdlib.h>  // Required for C dynamic memory (malloc)
 #include <stdbool.h> // Required for C boolean data types
 
-// --- PIN DEFINITIONS ---
+// PIN DEFINITIONS
 const int ENTRY_BUTTON_PIN = 12;
 const int EXIT_BUTTON_PIN = 5;
 const int TOTAL_SPACES = 4;
@@ -9,7 +9,7 @@ const int TOTAL_SPACES = 4;
 // LED Pins from left to right
 const int LED_PINS[] = {11, 10, 9, 8};
 
-// --- C-STYLE STRUCTURES & POINTERS ---
+// C-STYLE STRUCTURES & POINTERS
 // In C, we use typedef to create an alias for the struct
 typedef struct {
   int id;
@@ -20,7 +20,7 @@ typedef struct {
 // Pointer to an array of ParkingSpace pointers
 ParkingSpace** parkingLot;
 
-// --- NON-BLOCKING DEBOUNCE VARIABLES ---
+// NON-BLOCKING DEBOUNCE VARIABLES
 unsigned long lastDebounceTimeEntry = 0;
 unsigned long lastDebounceTimeExit = 0;
 const unsigned long debounceDelay = 50;
@@ -30,10 +30,10 @@ int lastExitButtonState = 1;
 int entryButtonState = 1;
 int exitButtonState = 1;
 
-// --- PARKING STATISTICS ---
+// PARKING STATISTICS
 int occupiedCount = 0;
 
-// --- C FUNCTION PROTOTYPES ---
+// C FUNCTION PROTOTYPES
 // Standard C practice requires declaring functions before they are called
 void handleEntryButton(void);
 void handleExitButton(void);
@@ -73,7 +73,7 @@ void loop() {
   handleExitButton();
 }
 
-// --- MODULAR FUNCTIONS ---
+// MODULAR FUNCTIONS
 
 void handleEntryButton(void) {
   int reading = digitalRead(ENTRY_BUTTON_PIN);
