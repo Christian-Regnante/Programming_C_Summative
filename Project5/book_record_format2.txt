@@ -1,0 +1,11 @@
+Book ID|Title|Author|Category|Copies
+B001|The Great Gatsby|F. Scott Fitzgerald|Fiction|5
+B002|To Kill a Mockingbird|Harper Lee|Fiction|8
+B003|1984|George Orwell|Dystopian|6
+B004|Pride and Prejudice|Jane Austen|Romance|4
+B005|The Catcher in the Rye|J.D. Salinger|Fiction|7
+B006|A Brief History of Time|Stephen Hawking|Science|12
+B007|The Art of Computer Programming|Donald Knuth|Technology|3
+B008|Clean Code|Robert C. Martin|Technology|15
+B009|The Hobbit|J.R.R. Tolkien|Fantasy|10
+B010|Sapiens: A Brief History of Humankind|Yuval Noah Harari|History|9
