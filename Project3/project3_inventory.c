@@ -19,7 +19,7 @@ void remove_newline(char *str) {
 int find_book_index_by_id(const Inventory *inv, const char *id) {
     if (!inv || !id) return -1;
     for (int i = 0; i < inv->count; i++) {
-        if (_stricmp(inv->books[i].id, id) == 0) return i;
+        if (strcasecmp(inv->books[i].id, id) == 0) return i;
     }
     return -1;
 }
@@ -321,8 +321,8 @@ void sort_inventory(Inventory *inv) {
     for (int i = 0; i < inv->count - 1; i++) {
         for (int j = i + 1; j < inv->count; j++) {
             int swap = 0;
-            if (choice == 1 && _stricmp(inv->books[i].id, inv->books[j].id) > 0) swap = 1;
-            else if (choice == 2 && _stricmp(inv->books[i].title, inv->books[j].title) > 0) swap = 1;
+            if (choice == 1 && strcasecmp(inv->books[i].id, inv->books[j].id) > 0) swap = 1;
+            else if (choice == 2 && strcasecmp(inv->books[i].title, inv->books[j].title) > 0) swap = 1;
             else if (choice == 3 && inv->books[i].copies < inv->books[j].copies) swap = 1;
 
             if (swap) {

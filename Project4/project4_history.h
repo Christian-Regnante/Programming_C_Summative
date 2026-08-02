@@ -7,6 +7,13 @@
 #include <string.h>
 #include <time.h>
 
+#ifdef _WIN32
+  #define strcasecmp _stricmp
+#else
+  #include <strings.h>
+#endif
+
+
 #define INITIAL_HISTORY_CAPACITY 10
 
 typedef struct {

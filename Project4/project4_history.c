@@ -133,7 +133,7 @@ int predicate_filter_by_type(const Record *rec, const void *criterion) {
 }
 
 int compare_by_type(const Record *a, const Record *b) {
-    return _stricmp(a->conversion_name, b->conversion_name);
+    return strcasecmp(a->conversion_name, b->conversion_name);
 }
 
 int compare_by_output_asc(const Record *a, const Record *b) {
