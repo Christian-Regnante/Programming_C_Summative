@@ -1,0 +1,5 @@
+POSIX threads (pthreads) enable concurrent execution in C programming.
+Multithreading improves efficiency when processing large datasets or multiple files.
+Each thread maintains its own call stack and execution context.
+No locks or mutexes are required when operating on isolated files.
+Sample 2 processing complete.
