@@ -1,0 +1,138 @@
+SMART PARKING LOT MONITORING SYSTEM - PSEUDOCODE
+
+
+DEFINE STRUCTURE ParkingSpace:
+    INTEGER id
+    INTEGER ledPin
+    BOOLEAN isOccupied
+END STRUCTURE
+
+DEFINE GLOBAL VARIABLES:
+    ENTRY_BUTTON_PIN = 12
+    EXIT_BUTTON_PIN = 5
+    TOTAL_SPACES = 4
+    LED_PINS = [11, 10, 9, 8]
+    
+    POINTER TO ARRAY OF POINTERS parkingLot
+    occupiedCount = 0
+    
+    debounceDelay = 50 ms
+    lastDebounceTimeEntry = 0
+    lastDebounceTimeExit = 0
+    lastEntryButtonState = HIGH
+    lastExitButtonState = HIGH
+    entryButtonState = HIGH
+    exitButtonState = HIGH
+
+
+PROGRAM INITIALIZATION (setup):
+    START Serial Communication at 9600 baud rate
+    CONFIGURE ENTRY_BUTTON_PIN as INPUT_PULLUP
+    CONFIGURE EXIT_BUTTON_PIN as INPUT_PULLUP
+    
+    // Dynamic Memory Allocation using malloc
+    ALLOCATE memory for parkingLot array (4 pointers to ParkingSpace)
+    
+    FOR i = 0 TO TOTAL_SPACES - 1:
+        ALLOCATE memory for parkingLot[i] (ParkingSpace structure)
+        SET parkingLot[i]->id = i + 1
+        SET parkingLot[i]->ledPin = LED_PINS[i]
+        SET parkingLot[i]->isOccupied = FALSE
+        
+        CONFIGURE parkingLot[i]->ledPin as OUTPUT
+        WRITE HIGH to parkingLot[i]->ledPin (LED ON = Space Available)
+    END FOR
+    
+    PRINT "=== Smart Parking System Initialized ==="
+    CALL PrintStatistics()
+
+
+MAIN LOOP (loop):
+    CALL HandleEntryButton()
+    CALL HandleExitButton()
+
+
+FUNCTION HandleEntryButton:
+    READ current state of ENTRY_BUTTON_PIN
+    
+    IF current state != lastEntryButtonState THEN
+        RESET lastDebounceTimeEntry = current time (millis)
+    END IF
+    
+    IF (current time - lastDebounceTimeEntry) > debounceDelay THEN
+        IF current state != entryButtonState THEN
+            SET entryButtonState = current state
+            IF entryButtonState == LOW THEN
+                CALL ProcessVehicleEntry()
+            END IF
+        END IF
+    END IF
+    
+    SET lastEntryButtonState = current state
+END FUNCTION
+
+
+FUNCTION HandleExitButton:
+    READ current state of EXIT_BUTTON_PIN
+    
+    IF current state != lastExitButtonState THEN
+        RESET lastDebounceTimeExit = current time (millis)
+    END IF
+    
+    IF (current time - lastDebounceTimeExit) > debounceDelay THEN
+        IF current state != exitButtonState THEN
+            SET exitButtonState = current state
+            IF exitButtonState == LOW THEN
+                CALL ProcessVehicleExit()
+            END IF
+        END IF
+    END IF
+    
+    SET lastExitButtonState = current state
+END FUNCTION
+
+
+FUNCTION ProcessVehicleEntry:
+    IF occupiedCount >= TOTAL_SPACES THEN
+        PRINT "[ERROR] Parking is FULL! Cannot admit more vehicles."
+        RETURN
+    END IF
+    
+    FOR i = 0 TO TOTAL_SPACES - 1:
+        IF parkingLot[i]->isOccupied == FALSE THEN
+            SET parkingLot[i]->isOccupied = TRUE
+            WRITE LOW to parkingLot[i]->ledPin (LED OFF = Occupied)
+            INCREMENT occupiedCount BY 1
+            
+            PRINT "Action: Vehicle ENTERED. Slot " + parkingLot[i]->id + " is now OCCUPIED."
+            CALL PrintStatistics()
+            BREAK LOOP
+        END IF
+    END FOR
+END FUNCTION
+
+
+FUNCTION ProcessVehicleExit:
+    IF occupiedCount <= 0 THEN
+        PRINT "[ERROR] Parking is EMPTY! No vehicles to remove."
+        RETURN
+    END IF
+    
+    FOR i = 0 TO TOTAL_SPACES - 1:
+        IF parkingLot[i]->isOccupied == TRUE THEN
+            SET parkingLot[i]->isOccupied = FALSE
+            WRITE HIGH to parkingLot[i]->ledPin (LED ON = Available)
+            DECREMENT occupiedCount BY 1
+            
+            PRINT "Action: Vehicle EXITED. Slot " + parkingLot[i]->id + " is now AVAILABLE."
+            CALL PrintStatistics()
+            BREAK LOOP
+        END IF
+    END FOR
+END FUNCTION
+
+
+FUNCTION PrintStatistics:
+    PRINT "STATISTICS -> Occupied: " + occupiedCount + " | Available: " + (TOTAL_SPACES - occupiedCount)
+    PRINT "----------------------------------------"
+END FUNCTION
