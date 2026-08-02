@@ -16,10 +16,26 @@ void remove_newline(char *str) {
     if (len > 1 && str[len - 2] == '\r') str[len - 2] = '\0';
 }
 
+void trim_str(char *str) {
+    if (!str) return;
+    char *start = str;
+    while (*start == ' ' || *start == '\t' || *start == '\r' || *start == '\n') start++;
+    if (*start == '\0') { str[0] = '\0'; return; }
+    char *end = start + strlen(start) - 1;
+    while (end > start && (*end == ' ' || *end == '\t' || *end == '\r' || *end == '\n')) end--;
+    *(end + 1) = '\0';
+    if (start != str) memmove(str, start, strlen(start) + 1);
+}
+
 int find_book_index_by_id(const Inventory *inv, const char *id) {
     if (!inv || !id) return -1;
+    char clean_id[MAX_ID_LEN];
+    strncpy(clean_id, id, MAX_ID_LEN - 1);
+    clean_id[MAX_ID_LEN - 1] = '\0';
+    trim_str(clean_id);
+
     for (int i = 0; i < inv->count; i++) {
-        if (strcasecmp(inv->books[i].id, id) == 0) return i;
+        if (strcasecmp(inv->books[i].id, clean_id) == 0) return i;
     }
     return -1;
 }
@@ -127,16 +143,16 @@ int import_from_txt(Inventory *inv, const char *filename) {
             strncpy(temp, line, sizeof(temp) - 1);
 
             char *token = strtok(temp, "|");
-            if (token) strncpy(b.id, token, MAX_ID_LEN - 1);
+            if (token) { strncpy(b.id, token, MAX_ID_LEN - 1); trim_str(b.id); }
 
             token = strtok(NULL, "|");
-            if (token) strncpy(b.title, token, MAX_TITLE_LEN - 1);
+            if (token) { strncpy(b.title, token, MAX_TITLE_LEN - 1); trim_str(b.title); }
 
             token = strtok(NULL, "|");
-            if (token) strncpy(b.author, token, MAX_AUTHOR_LEN - 1);
+            if (token) { strncpy(b.author, token, MAX_AUTHOR_LEN - 1); trim_str(b.author); }
 
             token = strtok(NULL, "|");
-            if (token) strncpy(b.category, token, MAX_CATEGORY_LEN - 1);
+            if (token) { strncpy(b.category, token, MAX_CATEGORY_LEN - 1); trim_str(b.category); }
 
             token = strtok(NULL, "|");
             if (token) b.copies = atoi(token);
