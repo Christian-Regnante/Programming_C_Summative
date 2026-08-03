@@ -116,7 +116,7 @@ Programming_C_Summative/
 
 #### Project 3 (Library System):
 ```bash
-gcc -Wall -Wextra Project3/project3_main.c -o Project3/library_system
+gcc -Wall -Wextra Project3/project3_main.c -o Project3/library_system -lm
 ./Project3/library_system
 ```
 
