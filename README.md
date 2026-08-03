@@ -4,7 +4,7 @@ Welcome to the **Programming in C Summative Portfolio**. This repository contain
 
 ---
 
-## 🎯 Assessment Outcomes Coverage
+## Assessment Outcomes Coverage
 
 This portfolio directly demonstrates mastery of the core C and systems programming outcomes:
 
@@ -19,7 +19,7 @@ This portfolio directly demonstrates mastery of the core C and systems programmi
 
 ---
 
-## 📂 Project Structure & Overview
+## Project Structure & Overview
 
 ```text
 Programming_C_Summative/
@@ -33,7 +33,7 @@ Programming_C_Summative/
 
 ---
 
-### 🟢 Project 1: Smart Parking Lot Monitoring System
+### Project 1: Smart Parking Lot Monitoring System
 * **Directory**: [`Project1/`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project1)
 * **Primary Files**: [`project1_parking.ino`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project1/project1_parking.ino), [`project1_pseudocode`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project1/project1_pseudocode)
 * **Hardware & Tools**: Arduino UNO / Nano, Tinkercad Circuits, EasyEDA PCB Designer.
@@ -48,7 +48,7 @@ Programming_C_Summative/
 
 ---
 
-### 🟢 Project 2: Automated Backup Manager
+### Project 2: Automated Backup Manager
 * **Directory**: [`Project2/`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project2)
 * **Primary File**: [`backup_manager.sh`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project2/backup_manager.sh)
 * **Language & Tools**: Bash Shell Scripting, Linux Utilities (`tar`, `gzip`, `find`, `du`).
@@ -61,10 +61,10 @@ Programming_C_Summative/
 
 ---
 
-### 🟢 Project 3: Library Book Inventory Management System
+### Project 3: Library Book Inventory Management System
 * **Directory**: [`Project3/`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project3)
 * **Primary File**: [`project3_main.c`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project3/project3_main.c)
-* **Language & Compiler**: C99/C11 (GCC / MSVC).
+* **Language & Compiler**: GCC.
 
 #### Key Features & Implementation:
 * **Dynamic Array Management**: Struct inventory dynamically resizes using `malloc`, `realloc`, and `free`.
@@ -75,10 +75,10 @@ Programming_C_Summative/
 
 ---
 
-### 🟢 Project 4: Multi-Unit Converter & History Toolkit
+### Project 4: Multi-Unit Converter & History Toolkit
 * **Directory**: [`Project4/`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project4)
 * **Primary Files**: [`project4_main.c`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project4/project4_main.c), [`project4_conversions.c`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project4/project4_conversions.c), [`project4_history.c`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project4/project4_history.c)
-* **Language & Compiler**: C99/C11 (GCC / MSVC).
+* **Language & Compiler**: GCC.
 
 #### Key Features & Implementation:
 * **Function Pointer Dispatch Tables**: Maps unit conversion mathematical functions cleanly using:
@@ -91,10 +91,10 @@ Programming_C_Summative/
 
 ---
 
-### 🟢 Project 5: Multi-Threaded File & Log System Analyzer
+### Project 5: Multi-Threaded File & Log System Analyzer
 * **Directory**: [`Project5/`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project5)
 * **Primary Files**: [`project5_main.c`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project5/project5_main.c), [`project5_analyzer.c`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project5/project5_analyzer.c), [`project5_analyzer.h`](file:///g:/Programming%20in%20C/Programming_C_Summative/Project5/project5_analyzer.h)
-* **Language & Compiler**: C99/C11 with POSIX Threads (`pthreads`).
+* **Language & Compiler**: GCC.
 
 #### Key Features & Implementation:
 * **Multi-Threaded Execution**: Uses POSIX Threads (`pthread_create`, `pthread_join`) to scan and process multiple text and C source files concurrently.
@@ -105,10 +105,10 @@ Programming_C_Summative/
 
 ---
 
-## 🛠️ Building & Running the Projects
+## Building & Running the Projects
 
 ### Prerequisites
-* **GCC / Clang / MSVC** (for Projects 3, 4, and 5)
+* **GCC(for Projects 3, 4, and 5)
 * **Bash Shell / Linux / WSL / Git Bash** (for Project 2)
 * **Arduino IDE or Tinkercad** (for Project 1)
 
@@ -128,7 +128,7 @@ gcc -Wall -Wextra Project4/project4_main.c Project4/project4_conversions.c Proje
 
 #### Project 5 (Multi-Threaded Analyzer):
 ```bash
-gcc -Wall -Wextra -pthread Project5/project5_main.c Project5/project5_analyzer.c -o Project5/file_processor
+gcc -Wall -Wextra Project5/project5_main.c Project5/project5_analyzer.c -o Project5/file_processor
 ./Project5/file_processor
 ```
 
@@ -138,5 +138,3 @@ chmod +x Project2/backup_manager.sh
 ./Project2/backup_manager.sh
 ```
 
----
-*Created as part of the C Programming Summative Portfolio.*
